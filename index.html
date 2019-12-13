@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<style>
+			body { background-color: #111; } 
+
+			#textDiv {
+				font-family: monospace;
+				padding-left: 10px; 
+				background-color: #222; 
+				color: #bbb;
+			}
+
+			input {
+				background-color: #111;
+				border: 1px solid #444;
+				color: #fff;
+			}
+		</style>
+		<title>ASTEROIDS</title>
+
+		<script type="text/javascript" src="gl-matrix.js"></script>
+		<script type="text/javascript" src="main.js"></script>
+		<script type="text/javascript" src="octree.js"></script>
+		<script type="text/javascript" src="simplex-noise.js"></script>
+
+		
+	</head>
+
+	<body onload="main();">
+
+		<canvas id="mainWebGLCanvas" width="512" height="512" style="border: solid 2px #444; position: absolute;"></canvas>
+		<canvas id="uiCanvas"        width="512" height="512" style="border: solid 2px #444; position: absolute;"></canvas>
+
+		<div id="textDiv" style="margin-left: 512px; ">
+			<div id="ctrls">
+				<div id="ctrlHeader">
+					<h3 style="display: inline-block;">CONTROLS</h3>
+					<table>
+						<tr>
+							<td>W/↑ / S/↓</td>
+							<td>PITCH</td>
+						</tr>
+						<tr>
+							<td>A/← / D/→</td>
+							<td>YAW</td>
+						</tr>
+						<tr>
+							<td>Q / E</td>
+							<td>ROLL</td>
+						</tr>
+						<tr>
+						</tr>
+						<tr>
+							<td>SHIFT / CTRL</td>
+							<td>THRUST FWD/BACK</td>
+						</tr>
+						<tr>
+							<td>F</td>
+							<td>CANCEL VELOCITY</td>
+						</tr>
+						<tr>
+							<td>SPACE</td>
+							<td>SHOOT</td>
+						</tr>
+					</table>
+				</div> <!--ctrlHeader-->
+				<!--New debug controls will be instantiated here-->
+			</div> <!--ctrls-->
+
+			<div id="dbgCtrls">
+				<div id="dbgCtrlHeader">
+					<h3 style="display: inline-block;">DEBUG CONTROL</h3>
+					<button id="pauseResumeBtn" onclick="onPauseButton();">PAUSE</button>
+				</div> <!--dbgCtrlHeader-->
+				<!--New debug controls will be instantiated here-->
+			</div> <!--dbgCtrls-->
+
+			<div id="dbgLog">
+					<h3>DEBUG STATUS TRACKING</h3>
+			</div> <!--dbgCtrls-->
+		</div> <!--dbgDiv-->
+		
+	</body>
+</html>

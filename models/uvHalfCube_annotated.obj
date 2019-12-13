@@ -1,0 +1,81 @@
+# Blender v2.81 (sub 16) OBJ File: ''
+# www.blender.org
+o Cube
+
+# 1: Top Right Front
+v 1.000000 1.000000 -1.000000
+
+# 2: Bottom Right Front
+v 1.000000 0.000000 -1.000000
+
+# 3: Top Right Back
+v 1.000000 1.000000 0.000000
+
+# 4: Bottom Right Back
+v 1.000000 0.000000 0.000000
+
+# 5: Top Left Front
+v 0.000000 1.000000 -1.000000
+
+# 6: Top Left Back
+v 0.000000 1.000000 0.000000
+
+# 7: Bottom Left Back
+v 0.000000 0.000000 0.000000
+
+# Just use x component
+# 0-0.25: red | 0.25-0.50: yellow | 0.50-0.75: magenta
+
+# 1: RED
+vt 0.187500 0.937500
+# 2: RED
+vt 0.062500 0.812500
+# 3: RED
+vt 0.187500 0.812500
+
+# 4: MAG
+vt 0.562500 0.437500
+# 5: MAG
+vt 0.687500 0.312500
+# 6: MAG
+vt 0.687500 0.437500
+
+# 7: YEL
+vt 0.437500 0.562500
+# 8: YEL
+vt 0.312500 0.687500
+# 9: YEL
+vt 0.312500 0.562500
+
+# 10: RED
+vt 0.062500 0.937500
+# 11: MAG
+vt 0.562500 0.312500
+# 12: YEL
+vt 0.437500 0.687500
+
+s off
+
+# V: TRF TLB TRB (TOP)
+# C: RED
+f 1/1 6/2 3/3
+
+# V: BRB TLB BLB (BACK)
+# C: MAG
+f 4/4 6/5 7/6
+
+# V: BRF TRB BRB (RIGHT)
+# C: YEL
+f 2/7 3/8 4/9
+
+# TRF TLF TLB (TOP)
+# C: RED
+f 1/1 5/10 6/2
+
+# BRB TRB TLB (BACK)
+# C: MAG
+f 4/4 3/11 6/5
+
+# BRF TRF TRB (RIGHT)
+# C: YEL
+f 2/7 1/12 3/8
