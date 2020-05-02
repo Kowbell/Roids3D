@@ -1,3 +1,14 @@
+import './gl-matrix.js';
+
+// /** @typedef {number[]} vec3 [x, y, z] */
+var vec3 = glMatrix.vec3;
+/** @typedef {number[]} vec4 [x, y, z, w] */
+var vec4 = glMatrix.vec4;
+/** @typedef {number[]} quat [x, y, z, w] */
+var quat = glMatrix.quat;
+/** @typedef {number[]} mat4 16-component 1D matrix, column-major */
+var mat4 = glMatrix.mat4;
+
 /** Radius (game units, not nodes) of the tree root */
 const OCTREE_NODE_ENCLOSE_SIZE = 32;
 /** Stop subdividing if the octree node has this many objects (or fewer) */
@@ -5,25 +16,19 @@ const OCTREE_NODE_MIN_OBJ = 1;
 /** Stop subdividing if the octree node extents are <= this */
 const OCTREE_NODE_MIN_RADIUS = 0.1;
 
-/** Only update the octree this often */
-const OCTREE_UPDATE_TIME_MS = 250;
-
 /** @type {OctreeNode} Assigned in OctreeNode.initializeTree() */
-let OCTREE_ROOT_NODE = undefined;
+export let OCTREE_ROOT_NODE = undefined;
 /** @type {number} Maximum depth of the current tree, mainly for logging */
 let OCTREE_DEPTH = 0;
 /** @type {number} Current number of octree nodes, mainly for logging */
 let OCTREE_NODE_COUNT = 0;
-
-/** Next time to update the tree (ms) */
-let OCTREE_UPDATE_NEXT = 0;
 
 /**
  * Recursive tree node containing at least OCTREE_NODE_MIN_OBJ objects and at least OCTREE_NODE_MIN_RADIUS units in radius
  * For now when we need to rebuild we completely rebuild the entire tree
  * Shout out to Eric Nevala, https://www.gamedev.net/articles/programming/general-and-gameplay-programming/introduction-to-octrees-r3529/
  */
-class OctreeNode {
+export class OctreeNode {
 	/**
 	 * @param {vec3} inCenter 
 	 * @param {number} inRadius How far out from the center in each direction we extend

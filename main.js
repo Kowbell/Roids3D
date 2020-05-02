@@ -1,3 +1,9 @@
+import { EObjectTypes, gameObjectsPendingDelete, resetPendingDelete, deleteObject } from "./modules/game-object.mjs";
+import { OctreeNode, OCTREE_ROOT_NODE } from './octree.js';
+
+// TODO gotta be a better way for the aliases... couldn't do `import { glMatrix.vec3 as vec3 }` or anything like that...
+import './gl-matrix.js';
+
 // #region Typedef's & Tiny Helpers :===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===
 
 /** @typedef {number[]} vec3 [x, y, z] */
@@ -67,6 +73,11 @@ class RollingAverage {
 
 // #region Global Variables :===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===
 
+/** Only update the octree this often */
+const OCTREE_UPDATE_TIME_MS = 250;
+/** Next time to update the tree (ms) */
+let OCTREE_UPDATE_NEXT = 0;
+
 var IS_PAUSED = false;
 const DEG2RAD = Math.PI / 180;
 const PI2 = Math.PI * 2;
@@ -93,8 +104,6 @@ var gameObjects = [];
 
 /** @type {GameObject[]} New objects should be added to this list. Next frame we'll enable them */
 var gameObjectsPendingSpawn = [];
-/** @type {GameObject[]} */
-var gameObjectsPendingDelete = [];
 
 /** An "orbit"/"third-person" camera */
 var CAMERA = {
@@ -209,7 +218,7 @@ var CAMERA = {
 		debugDrawText("computeViewMatrix", `cameraPosition=${printFlt(cameraPosition)} offsetLookAt=${printFlt(offsetLookAt)}`);
 
 		// Now generate a matrix at that position, using a rotation such that the camera is looking at the point
-		viewMat = mat4.create();
+		let viewMat = mat4.create();
 		mat4.lookAt(viewMat, cameraPosition, offsetLookAt, vec3.fromValues(0, 1, 0));
 
 		if (this.xformConfig.parentTransform != undefined) {
@@ -675,7 +684,6 @@ class Drawable {
 	} // draw()
 } // class Drawable
 
-const EObjectTypes = {"Asteroid": 1, "Player": 2, "Shot": 3};
 class GameObject {
 	/**
 	 * @param {string} inType within EObjectTypes
@@ -702,21 +710,6 @@ class GameObject {
 		return distSq < (this._collisionRadiusSquared + inOtherObject._collisionRadiusSquared);
 	}
 } // class GameObject
-
-/**
- * Next frame, remove the object from gameObjects and it's drawable from drawables
- * @param {GameObject} inGameObject 
- */
-function deleteObject(inGameObject) {
-	inGameObject.enabled = false;
-
-	var pendingIdx = gameObjectsPendingDelete.indexOf(inGameObject)
-	if (pendingIdx < 0) {
-		gameObjectsPendingDelete.push(inGameObject);
-	} else {
-		console.warn(`Object '${inGameObject.name}' already queued for delete (idx=${pendingIdx})`);
-	}
-}
 // #endregion Runtime Object Model :===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===
 
 
@@ -1243,7 +1236,7 @@ function setupUI() {
 
 function setupSkybox() {
 	ALL_LOADED_TEXT.SKYBOX.parsed = parseObj(ALL_LOADED_TEXT.SKYBOX.loadedSrc);
-	SKYBOXDRAW = ALL_LOADED_TEXT.SKYBOX.parsed;
+	let SKYBOXDRAW = ALL_LOADED_TEXT.SKYBOX.parsed;
 
 	SKYBOX = new Drawable("Skybox", SKYBOXDRAW, ALL_SHADERS["textured"]);
 	SKYBOX.shaderConfig.uniforms["u_textureSampler"].args.push(ALL_LOADED_IMG["SKYBOX"]);
@@ -1989,7 +1982,7 @@ function updateGame(inDeltaTime) {
 		var playerPos = CONTROLLED_PLAYER_SHIP.drawable.transform.transVec3;
 		var playerColRad = CONTROLLED_PLAYER_SHIP.collisionRadius;
 
-		for (roidIdx = 0; roidIdx < asteroids.length; roidIdx++) {
+		for (let roidIdx = 0; roidIdx < asteroids.length; roidIdx++) {
 			let roidObj = asteroids[roidIdx]; if (roidObj.enabled == false) continue;
 			let roidPos = roidObj.drawable.transform.transVec3;
 
@@ -2065,7 +2058,6 @@ function updateGame(inDeltaTime) {
 		} else {
 			console.error(`OBJECT PENDING DELETE '${obj.name}' DRAWABLE NOT IN DRAWABLES COLLECTION!`);
 		}
-		delete(obj.drawable);
 
 		let objIdx = gameObjects.indexOf(obj);
 		if (objIdx >= 0) {
@@ -2073,9 +2065,8 @@ function updateGame(inDeltaTime) {
 		} else {
 			console.error(`OBJECT PENDING DELETE '${obj.name}' NOT IN gameObjects COLLECTION!`);
 		}
-		delete(obj);
 	} // foreach object pending delete
-	gameObjectsPendingDelete = [];
+	resetPendingDelete();
 	// ...done handling pending deletes!
 	
 	// Handle new asteroids...
@@ -2367,6 +2358,7 @@ function main() {
 
 	debugControls();
 } // end main
+window.onload = main;
 
 // #region Debug Helpers :===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===:===
 
